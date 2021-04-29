@@ -1,0 +1,76 @@
+# Welcome to Serverless!
+#
+# This file is the main config file for your service.
+# It's very minimal at this point and uses default values.
+# You can always add more config options for more control.
+# We've included some commented out config examples here.
+# Just uncomment any of them to get that config option.
+#
+# For full config options, check the docs:
+#    docs.serverless.com
+#
+# Happy Coding!
+
+service: on-the-rise-api
+# app and org for use with dashboard.serverless.com
+#app: your-app-name
+#org: your-org-name
+
+plugins:
+  - serverless-plugin-typescript
+  - serverless-plugin-optimize
+  - serverless-offline
+  - serverless-pseudo-parameters
+
+variablesResolutionMode: 20210326
+
+# You can pin your service to only deploy with a specific Serverless version
+# Check out our docs for more details
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: ${opt:stage, 'dev'}
+  region: ${opt:region, 'ap-southeast-1'}
+  lambdaHashingVersion: 20201221
+  iam:
+    role:
+      statements:
+        - Effect: 'Allow'
+          Action:
+            - 'secretsmanager:GetSecretValue'
+          Resource:
+            - arn:aws:secretsmanager:${self:provider.region}:#{AWS::AccountId}:secret:on-the-rise-*
+        - Effect: 'Allow'
+          Action:
+            - 's3:*'
+          Resource:
+            - { 'Fn::Join': [ '', [ 'arn:aws:s3:::', { 'Ref': 'ServerlessDeploymentBucket' } ] ] }
+            - arn:aws:s3:::${self:custom.s3BucketName}/*
+  environment:
+    NODE_ENV: ${opt:stage, 'dev'}
+    REGION: ${opt:region, 'ap-southeast-1'}
+    DB_URI: on-the-rise-db-${opt:stage, 'dev'}
+    FACEBOOK_LOGIN_SECRET: on-the-rise-facebook-login-${opt:stage, 'dev'}
+    GOOGLE_LOGIN_SECRET: on-the-rise-google-login-${opt:stage, 'dev'}
+    JWT_SECRET: ${opt:jwt_secret, 'secretKey'}
+    S3_BUCKET: ${self:custom.s3BucketName}
+    API_GATEWAY_ID: ${self:service}-${opt:stage, 'dev'}
+
+  apiGateway:
+    shouldStartNameWithService: true
+
+custom:
+  optimize:
+    external: ['swagger-ui-dist']
+  baseName: ${self:service}-${self:provider.region}-${self:provider.stage}
+  s3BucketName: ${self:custom.baseName}-s3-bucket
+
+
+
+configValidationMode: error
+
+functions:
+  - ${file(./resources/lambdas/server.yml)}
+
+resources:
+  - ${file(./resources/s3.yml)}

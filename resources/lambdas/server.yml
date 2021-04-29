@@ -1,0 +1,9 @@
+  server:
+    handler: src/handlers/server.handler
+    events:
+      - http:
+          method: any
+          path: /{proxy+}
+          cors:
+            origin: '*'
+            allowCredentials: true

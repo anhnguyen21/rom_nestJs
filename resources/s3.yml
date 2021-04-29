@@ -1,0 +1,18 @@
+Resources:
+  S3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      CorsConfiguration:
+        CorsRules:
+          - AllowedHeaders: ['*']
+            AllowedMethods: [GET, POST, PUT]
+            AllowedOrigins: ['*']
+      BucketName: ${self:custom.s3BucketName}
+      LifecycleConfiguration:
+        Rules:
+          - Prefix: origins/
+            Status: Enabled
+            ExpirationInDays: '3'
+          - Prefix: thumbnails/
+            Status: Enabled
+            ExpirationInDays: '3'
