@@ -124,9 +124,9 @@ export class tableUser1619684527953 implements MigrationInterface {
 
         CREATE TABLE "salary"
         (
-            "id"               serial       NOT NULL,
-            "work_id"          integer      not null,
-            "work_level_id"      integer      not null,
+            "id"                serial       NOT NULL,
+            "work_id"           integer      not null,
+            "work_level_id"     integer      not null,
             CONSTRAINT "pk_salary_role" PRIMARY KEY ("id"),
             CONSTRAINT "fk_salary_role_work_id" FOREIGN KEY (work_id) REFERENCES work (id),
             CONSTRAINT "fk_salary_work_level_id" FOREIGN KEY (work_level_id) REFERENCES work_level (id)
@@ -156,17 +156,26 @@ export class tableUser1619684527953 implements MigrationInterface {
         VALUES ('SystemAdmin', 'System Admin', true, false),('User', 'Normal User', true, false);
 
         INSERT INTO hotel_user (user_name, email, first_name, last_name, password, is_enable)
-        VALUES ('admin', 'ontherise@gmail.com', 'system', 'admin', '${password}', true);
+        VALUES ('admin', 'ontherise@gmail.com', 'system', 'admin', '${password}', true),
+        ('anh', 'anh@gmail.com', 'system', 'admin', '${password}', true),
+        ('anhnguyen', 'anhgnuyen@gmail.com', 'system', 'admin', '${password}', true),
+        ('dung', 'dung@gmail.com', 'system', 'admin', '${password}', true),
+        ('dungtran', 'dungtran@gmail.com', 'system', 'admin', '${password}', true);
     `)
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
-        DROP TABLE personnel_role
-        DROP TABLE hotel_user_role
-        DROP TABLE hotel_role
-        DROP TABLE hotel_user
-        DROP TABLE personnel
+        Drop table timekeeping;
+        drop table salary;
+        drop table work_level;
+        drop table user_work;
+        drop table work;
+        DROP TABLE personnel_role;
+        DROP TABLE hotel_user_role;
+        DROP TABLE hotel_role;
+        DROP TABLE hotel_user;
+        DROP TABLE personnel;
       `)
   }
 }

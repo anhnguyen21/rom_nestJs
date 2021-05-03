@@ -5,7 +5,7 @@ import { Injectable, InternalServerErrorException, NotFoundException } from '@ne
 import { AppUser } from '../../entities/User'
 import { UpdateUserDto } from './dto'
 import { getConnection } from 'typeorm'
-import { AppRole } from '../../entities/Role'
+import { Role } from '../../entities/Role'
 
 @Injectable()
 export class UsersService extends BaseService<FindAllUserResponse, FindOneUserResponse> {
@@ -54,9 +54,9 @@ export class UsersService extends BaseService<FindAllUserResponse, FindOneUserRe
       throw new NotFoundException('User not found')
     }
 
-    user.roles = await AppRole.createQueryBuilder()
+    user.roles = await Role.createQueryBuilder()
       .where('id = ANY (:roleIds)', { roleIds: payload.roleIds })
-      .andWhere('AppRole.globalRole = :globalRole', { globalRole: true })
+      .andWhere('Role.globalRole = :globalRole', { globalRole: true })
       .getMany()
 
     return await user.save()

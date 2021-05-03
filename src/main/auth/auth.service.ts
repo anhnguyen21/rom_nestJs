@@ -19,7 +19,7 @@ import { JwtService } from '@nestjs/jwt'
 import * as _ from 'lodash'
 import { nanoid } from 'nanoid'
 import { ROLE_NAME } from '../../common/constant'
-import { AppRole } from '../../entities/Role'
+import { Role } from '../../entities/Role'
 import { getManager } from 'typeorm'
 import { dateUtils } from '../../providers/datetimeUtils'
 import { sendEmailResetPassword } from '../../emailService'
@@ -42,7 +42,7 @@ export class AuthService {
     }
 
     //default to create user with role user
-    const userRole = await AppRole.findOne({ where: { name: ROLE_NAME.NormalUser } })
+    const userRole = await Role.findOne({ where: { name: ROLE_NAME.NormalUser } })
     if (!userRole) {
       throw new InternalServerErrorException('The user role was not found.')
     }
@@ -83,9 +83,9 @@ export class AuthService {
       .getOne()
 
     if (user) {
-      user.resetPasswordCode = (Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000).toString()
+      user.resetPasswordToken = (Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000).toString()
       await AppUser.save(user)
-      await sendEmailResetPassword(user.email, user.resetPasswordCode)
+      await sendEmailResetPassword(user.email, user.resetPasswordToken)
     } else {
       throw new NotFoundException('User not found')
     }
@@ -124,7 +124,6 @@ export class AuthService {
     user.password = PasswordUtil.generateHash(newPassword)
     user.resetPasswordToken = null
     user.resetPasswordTokenExpired = null
-    user.resetPasswordCode = null
 
     await AppUser.save(user)
     return { message: 'Your password has been reset' }
@@ -175,7 +174,7 @@ export class AuthService {
       const randomPassword = nanoid(10)
       const passwordHash = PasswordUtil.generateHash(randomPassword)
 
-      const userRole = await AppRole.findOne({ where: { name: ROLE_NAME.NormalUser } })
+      const userRole = await Role.findOne({ where: { name: ROLE_NAME.NormalUser } })
       if (!userRole) {
         throw new InternalServerErrorException('The user role was not found.')
       }

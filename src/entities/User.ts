@@ -8,10 +8,11 @@ import {
   ManyToMany,
   JoinTable
 } from 'typeorm'
-import { AppRole } from './Role'
+import { Role } from './Role'
+import { Work } from './Work'
 import { ApiProperty } from '@nestjs/swagger'
 
-@Entity('app_user')
+@Entity('hotel_user')
 export class AppUser extends BaseEntity {
   @PrimaryGeneratedColumn()
   @ApiProperty()
@@ -43,7 +44,7 @@ export class AppUser extends BaseEntity {
 
   @Column({ nullable: true })
   @ApiProperty()
-  location: string
+  address: string
 
   @Column({ nullable: true })
   @ApiProperty()
@@ -97,26 +98,25 @@ export class AppUser extends BaseEntity {
   @ApiProperty()
   modifiedBy: number
 
-  @Column({ select: false })
-  @ApiProperty()
-  resetPasswordCode: string
-
-  @Column({ nullable: true })
-  @ApiProperty()
-  country: string
-
-  @Column({ nullable: true })
-  @ApiProperty()
-  city: string
-
-  @ManyToMany((_type) => AppRole, { nullable: true })
+  @ManyToMany((_type) => Role, { nullable: true })
   @JoinTable({
-    name: 'app_user_role',
+    name: 'hotel_role',
     joinColumn: { name: 'user_id' },
     inverseJoinColumn: {
       name: 'role_id'
     }
   })
-  @ApiProperty({ type: [AppRole] })
-  roles: AppRole[]
+  @ApiProperty({ type: [Role] })
+  roles: Role[]
+
+  @ManyToMany((_type) => Work, { nullable: true })
+  @JoinTable({
+    name: 'hotel_role',
+    joinColumn: { name: 'user_id' },
+    inverseJoinColumn: {
+      name: 'role_id'
+    }
+  })
+  @ApiProperty({ type: [Work] })
+  works: Work[]
 }

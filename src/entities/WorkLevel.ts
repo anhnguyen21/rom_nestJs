@@ -1,15 +1,15 @@
 import { Entity, BaseEntity, PrimaryGeneratedColumn, Column } from 'typeorm'
 import { ApiProperty } from '@nestjs/swagger'
 
-@Entity('app_privilege')
-export class AppPrivilege extends BaseEntity {
+@Entity('work_level')
+export class WorkLevel extends BaseEntity {
   @PrimaryGeneratedColumn()
   @ApiProperty()
   id: number
 
   @Column()
   @ApiProperty()
-  name: string
+  level: string
 
   @Column()
   @ApiProperty()
